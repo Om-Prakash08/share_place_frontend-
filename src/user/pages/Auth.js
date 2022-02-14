@@ -98,7 +98,7 @@ const Auth = () => {
           if (res.data.status === 200) {
             setImgUrl(res.data.data.url);
             console.log(res.data.data.url);
-
+            let url=res.data.data.url ;
             axios({
               method: "post",
               url: "/users/signup",
@@ -107,7 +107,7 @@ const Auth = () => {
                 name: formState.inputs.name.value,
                 email: formState.inputs.email.value,
                 password: formState.inputs.password.value,
-                image: imgUrl,
+                image: url,
               },
             })
               .then((res) => {
@@ -121,6 +121,7 @@ const Auth = () => {
                 console.log(err);
                 setErrMessage("failed please try again!");
               });
+              url=imgUrl ;
           }
         })
         .catch((err) => {

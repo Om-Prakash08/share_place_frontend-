@@ -63,6 +63,7 @@ const NewPlace = () => {
     let body = new FormData();
     body.set("key", process.env.REACT_APP_IMGBB_SECRET_KEY);
     body.append("image", selectedImage);
+    let url=null ;
     axios({
       method: "post",
       url: "/1/upload",
@@ -73,6 +74,32 @@ const NewPlace = () => {
         if (res.data.status === 200) {
           setImgUrl(res.data.data.url);
           console.log(res.data.data.url);
+          url=res.data.data.url ;
+          axios({
+            method: "post",
+            url: "/places",
+            baseURL: process.env.REACT_APP_BACKEND_URL,
+            data: {
+              title: formState.inputs.title.value,
+              description: formState.inputs.description.value,
+              address: formState.inputs.address.value,
+              image: url,
+              latitude: formState.inputs.latitude.value,
+              longitude: formState.inputs.longitude.value,
+              creator: auth.userId,
+            },
+            headers: {
+              Authorization: "Bearer " + auth.token,
+            },
+          })
+            .then((res) => {
+              history.push("/");
+            })
+            .catch((err) => {
+              console.log(err);
+              setErrMessage("failed please try again!");
+            });
+          url=imgUrl ;
         }
       })
       .catch((err) => {
@@ -80,32 +107,7 @@ const NewPlace = () => {
         setErrMessage("failed please try again!");
       });
 
-    if(imgUrl){
-      axios({
-        method: "post",
-        url: "/places",
-        baseURL: process.env.REACT_APP_BACKEND_URL,
-        data: {
-          title: formState.inputs.title.value,
-          description: formState.inputs.description.value,
-          address: formState.inputs.address.value,
-          image: imgUrl,
-          latitude: formState.inputs.latitude.value,
-          longitude: formState.inputs.longitude.value,
-          creator: auth.userId,
-        },
-        headers: {
-          Authorization: "Bearer " + auth.token,
-        },
-      })
-        .then((res) => {
-          history.push("/");
-        })
-        .catch((err) => {
-          console.log(err);
-          setErrMessage("failed please try again!");
-        });
-    }
+     
     // try {
     //   const formData = new FormData();
     //   formData.append("title", formState.inputs.title.value);
